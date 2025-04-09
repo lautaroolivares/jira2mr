@@ -1,25 +1,7 @@
 import git
 import gitlab
-import configparser
 from atlassian import Jira
 import re
-import os
-
-# ---------------------
-# Configuration Handling
-# ---------------------
-
-def load_config():
-    """
-    Loads configuration from conf/config.ini file.
-    Returns:
-        configparser.ConfigParser object
-    """
-    config = configparser.ConfigParser()
-    config.read(os.path.join(os.path.dirname(__file__), 'config.ini'))
-    print("Loaded Config Sections:", config.sections())
-    return config
-
 
 # ---------------------
 # JIRA Helpers
@@ -172,38 +154,3 @@ def get_gitlab_project_id(gl, repo):
     # Fetch project details from GitLab
     project = gl.projects.get(project_path)
     return project.id
-
-# ---------------------
-# Entry Point
-# ---------------------
-
-def main(issue_key):
-    """
-    Main function to coordinate the full flow: Jira → Git → GitLab MR
-
-    Args:
-        issue_key (str): Jira issue key (e.g., "PROJ-123")
-    """
-    config = load_config()
-
-    verifySSL = config.getboolean("SETTINGS", "VerifySSL")
-    print(verifySSL)
-    # Initialize clients
-    jira = jira_auth(config, verifySSL)
-    gl = gitlab.Gitlab(config["GITLAB"]["URL"], private_token=config["GITLAB"]["Token"], ssl_verify = verifySSL)
-    repo = git.Repo(".")
-    
-    issue = get_jira_issue(jira, issue_key, config["JIRA"]["ProjectURL"])
-    new_branch = manage_git_branch(repo, issue["key"])
-    project_id = get_gitlab_project_id(gl, repo)
-    mr_url = create_gitlab_mr(gl, project_id, new_branch, issue)
-    
-    print(f"Merge request created: {mr_url}")
-
-# Run script from command line
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 2:
-        print("Usage: jira2mr.py <JIRA-ISSUE-KEY>")
-        sys.exit(1)
-    main(sys.argv[1])

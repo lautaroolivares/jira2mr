@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jira2mr"
+version = "0.1.0"
+description = "Automatically create GitLab merge requests from Jira tickets."
+authors = [{ name = "Lautaro Olivares", email = "lautaro.olivaressuarez@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+
+dependencies = [
+    "gitpython",
+    "python-gitlab",
+    "atlassian-python-api",
+    "configparser"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.data-files]
+"share/jira2mr" = ["conf/config.ini.example"]
+
+[project.scripts]
+jira2mr = "jira2mr.cli:main"
