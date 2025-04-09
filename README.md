@@ -13,14 +13,34 @@ git clone <repository_url> jira2mr
 ```
 
 ### 2. Install Dependencies
-Navigate to the `jira2mr` directory and install required Python libraries:
+Navigate to the `jira2mr` directory and install using pip:
 ```sh
 cd ~/jira2mr
-pip install -r requirements.txt
+pip install .
 ```
 
-### 3. Configure the Project
-Create a `config.ini` file in the `jira2mr` directory based on the provided `example_config.ini`:
+## 3. Usage
+Run the script from the repository where you are working. For example, if your working directory is `~/working_repo`, execute:
+```sh
+cd ~/working_repo
+jira2mr <JIRA_TICKET_ID>
+```
+Example:
+```sh
+jira2mr TICKET-481
+```
+
+## Behavior
+- If the JIRA ticket is a **Story**, the script:
+  - Creates a new branch `feature/<JIRA_TICKET_ID>`.
+  - Uses the ticket summary as the MR title.
+  - Sets the ticket description as the MR description.
+- If the JIRA ticket is a **Sub-task**, the script:
+  - Includes the parent Story's content in the MR description.
+- A link to the JIRA ticket is appended at the end of the MR description.
+
+### 4. Configure the Project
+A `config.ini` is created in the first execution in `~/.jira2mr/` with the following fields:
 
 #### Example `config.ini`:
 ```ini
@@ -38,26 +58,6 @@ Token = your-gitlab-token
 VerifySSL = true
 ```
 Replace the values with you actual credentials and project settings. Put the VerifySSL to no if you have problems with SSL verification, such as in an internal network.
-
-## Usage
-Run the script from the repository where you are working. For example, if your working directory is `~/working_repo`, execute:
-```sh
-cd ~/working_repo
-python ../jira2mr/jira2mr.py <JIRA_TICKET_ID>
-```
-Example:
-```sh
-python ../jira2mr/jira2mr.py TICKET-481
-```
-
-## Behavior
-- If the JIRA ticket is a **Story**, the script:
-  - Creates a new branch `feature/<JIRA_TICKET_ID>`.
-  - Uses the ticket summary as the MR title.
-  - Sets the ticket description as the MR description.
-- If the JIRA ticket is a **Sub-task**, the script:
-  - Includes the parent Story's content in the MR description.
-- A link to the JIRA ticket is appended at the end of the MR description.
 
 ## Notes
 - Ensure your `config.ini` is correctly set up before running the script.
